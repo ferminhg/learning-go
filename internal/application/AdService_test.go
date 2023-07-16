@@ -23,7 +23,7 @@ func TestPostAd(t *testing.T) {
 		inMemoryAdRepository := infra.NewInMemoryAdRepository()
 		service := AdService{Repository: inMemoryAdRepository}
 		t.Run(name, func(t *testing.T) {
-			ad := service.Post(tt.title, tt.description, tt.price)
+			ad, _ := service.Post(tt.title, tt.description, tt.price)
 			if ad.Title != tt.title {
 				t.Errorf("Expected %s -> got %s", tt.title, ad.Title)
 			}

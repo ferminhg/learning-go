@@ -13,7 +13,7 @@ func main() {
 	service := application.AdService{Repository: repository}
 
 	fmt.Println("💾 Posting Adds")
-	ad1 := service.Post("t1", "d1", 1)
+	ad1, _ := service.Post("t1", "d1", 1)
 	service.Post("t2", "d2", 2)
 	service.Post("t3", "d3", 3)
 	service.Post("t4", "d4", 4)

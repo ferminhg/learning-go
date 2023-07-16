@@ -9,10 +9,13 @@ type AdService struct {
 	Repository domain.AdServiceRepository
 }
 
-func (service AdService) Post(title string, description string, price float32) domain.Ad {
-	ad, _ := domain.NewAd(title, description, price)
+func (service AdService) Post(title string, description string, price float32) (domain.Ad, error) {
+	ad, err := domain.NewAd(title, description, price)
+	if err != nil {
+		return domain.Ad{}, err
+	}
 	service.Repository.Save(ad)
-	return ad
+	return ad, nil
 }
 
 func (service AdService) Find(adId string) (domain.Ad, bool) {
