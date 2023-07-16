@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func Test_postAddService(t *testing.T) {
+func TestPostSimpleAd(t *testing.T) {
 	tests := map[string]struct {
 		title       string
 		description string

@@ -2,8 +2,6 @@ package application
 
 import (
 	"github.com/ferminhg/learning-go/internal/domain"
-	"github.com/google/uuid"
-	"time"
 )
 
 type AdService struct {
@@ -11,14 +9,7 @@ type AdService struct {
 }
 
 func (service AdService) post(title string, description string, price float32) domain.Ad {
-	adId, _ := uuid.NewUUID()
-	ad := domain.Ad{
-		Id:          adId,
-		Title:       title,
-		Description: description,
-		Price:       price,
-		CreatedDate: time.Now(),
-	}
+	ad, _ := domain.NewAd(title, description, price)
 	service.repository.Save(ad)
 	return ad
 }
