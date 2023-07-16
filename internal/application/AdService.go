@@ -6,11 +6,11 @@ import (
 	"time"
 )
 
-//type PostAdService interface {
-//
-//}
+type AdService struct {
+	repository domain.AdServiceRepository
+}
 
-func postAdService(title string, description string, price float32) domain.Ad {
+func (service AdService) post(title string, description string, price float32) domain.Ad {
 	adId, _ := uuid.NewUUID()
 	ad := domain.Ad{
 		Id:          adId,
@@ -19,5 +19,6 @@ func postAdService(title string, description string, price float32) domain.Ad {
 		Price:       price,
 		CreatedDate: time.Now(),
 	}
+	service.repository.Save(ad)
 	return ad
 }
