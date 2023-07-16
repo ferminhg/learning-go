@@ -10,6 +10,10 @@ type InMemoryAdRepository struct {
 	ads map[string]domain.Ad
 }
 
+func (repository InMemoryAdRepository) Search(maxNumber int) ([]domain.Ad, error) {
+	panic("implement me")
+}
+
 func NewInMemoryAdRepository() *InMemoryAdRepository {
 	return &InMemoryAdRepository{
 		ads: make(map[string]domain.Ad),

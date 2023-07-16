@@ -1,11 +1,13 @@
 package application
 
 import (
+	"github.com/ferminhg/learning-go/internal/domain"
 	"github.com/ferminhg/learning-go/internal/infra"
+	"reflect"
 	"testing"
 )
 
-func TestPostSimpleAd(t *testing.T) {
+func TestPostAd(t *testing.T) {
 	tests := map[string]struct {
 		title       string
 		description string
@@ -37,5 +39,40 @@ func TestPostSimpleAd(t *testing.T) {
 				t.Errorf("Ad {%s} not found on repository", ad.Id)
 			}
 		})
+	}
+}
+
+func TestFindAd(t *testing.T) {
+	tests := map[string]struct {
+		id string
+		ok bool
+	}{
+		"not found ad": {
+			id: "not valid",
+			ok: false,
+		},
+	}
+	for name, tt := range tests {
+		inMemoryAdRepository := infra.NewInMemoryAdRepository()
+		service := AdService{repository: inMemoryAdRepository}
+		t.Run(name, func(t *testing.T) {
+			_, ok := service.find(tt.id)
+			if ok != tt.ok {
+				t.Errorf("Expected %v, got %v", tt.ok, ok)
+			}
+		})
+	}
+}
+
+func TestFindValidAd(t *testing.T) {
+	inMemoryAdRepository := infra.NewInMemoryAdRepository()
+	service := AdService{repository: inMemoryAdRepository}
+	ad, _ := domain.NewAd("t", "d", 1)
+	inMemoryAdRepository.Save(ad)
+
+	actualAd, _ := service.find(ad.Id.String())
+
+	if !reflect.DeepEqual(ad, actualAd) {
+		t.Errorf("Exepected %v, got %v", ad, actualAd)
 	}
 }
