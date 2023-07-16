@@ -20,9 +20,9 @@ searching requirements apart from searching by ad identifier or a simple "find a
 
 So, as it stands right now (and we made product people to swear that these requirements aren't going to change) what we 
 need is:
-* The capability of posting an ad
-* The capability of finding an ad by ID
-* The capability of finding a set of 5 (as maximum) ads to compose a listing
+- [ ] The capability of posting an ad
+- [ ] The capability of finding an ad by ID
+- [ ] The capability of finding a set of 5 (as maximum) ads to compose a listing
 
 Regarding the ad, it is composed by:
 * id (UUID)
