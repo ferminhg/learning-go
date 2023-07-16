@@ -23,7 +23,7 @@ func (repository InMemoryAdRepository) Search(maxNumber int) ([]domain.Ad, error
 	}
 
 	keys := make([]string, 0, len(repository.ads))
-	for k, _ := range repository.ads {
+	for k := range repository.ads {
 		keys = append(keys, k)
 	}
 

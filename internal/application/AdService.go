@@ -5,8 +5,6 @@ import (
 	"github.com/google/uuid"
 )
 
-const MaxSearch = 5
-
 type AdService struct {
 	Repository domain.AdServiceRepository
 }
