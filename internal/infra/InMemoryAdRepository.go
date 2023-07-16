@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/ferminhg/learning-go/internal/domain"
 	"github.com/google/uuid"
+	"math/rand"
+	"time"
 )
 
 type InMemoryAdRepository struct {
@@ -11,7 +13,31 @@ type InMemoryAdRepository struct {
 }
 
 func (repository InMemoryAdRepository) Search(maxNumber int) ([]domain.Ad, error) {
-	panic("implement me")
+	var adds []domain.Ad
+
+	if len(repository.ads) <= maxNumber {
+		for _, value := range repository.ads {
+			adds = append(adds, value)
+		}
+		return adds, nil
+	}
+
+	keys := make([]string, 0, len(repository.ads))
+	for k, _ := range repository.ads {
+		keys = append(keys, k)
+	}
+
+	s := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(s)
+
+	for i := 0; i < maxNumber && len(keys) > 0; i++ {
+		randomIndex := r.Intn(len(keys))
+		adds = append(adds, repository.ads[keys[randomIndex]])
+		keys = append(keys[:randomIndex], keys[randomIndex+1:]...)
+	}
+
+	fmt.Println(adds)
+	return adds, nil
 }
 
 func NewInMemoryAdRepository() *InMemoryAdRepository {

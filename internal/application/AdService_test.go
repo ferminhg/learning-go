@@ -21,9 +21,9 @@ func TestPostAd(t *testing.T) {
 	}
 	for name, tt := range tests {
 		inMemoryAdRepository := infra.NewInMemoryAdRepository()
-		service := AdService{repository: inMemoryAdRepository}
+		service := AdService{Repository: inMemoryAdRepository}
 		t.Run(name, func(t *testing.T) {
-			ad := service.post(tt.title, tt.description, tt.price)
+			ad := service.Post(tt.title, tt.description, tt.price)
 			if ad.Title != tt.title {
 				t.Errorf("Expected %s -> got %s", tt.title, ad.Title)
 			}
@@ -54,9 +54,9 @@ func TestFindAd(t *testing.T) {
 	}
 	for name, tt := range tests {
 		inMemoryAdRepository := infra.NewInMemoryAdRepository()
-		service := AdService{repository: inMemoryAdRepository}
+		service := AdService{Repository: inMemoryAdRepository}
 		t.Run(name, func(t *testing.T) {
-			_, ok := service.find(tt.id)
+			_, ok := service.Find(tt.id)
 			if ok != tt.ok {
 				t.Errorf("Expected %v, got %v", tt.ok, ok)
 			}
@@ -66,13 +66,50 @@ func TestFindAd(t *testing.T) {
 
 func TestFindValidAd(t *testing.T) {
 	inMemoryAdRepository := infra.NewInMemoryAdRepository()
-	service := AdService{repository: inMemoryAdRepository}
+	service := AdService{Repository: inMemoryAdRepository}
 	ad, _ := domain.NewAd("t", "d", 1)
 	inMemoryAdRepository.Save(ad)
 
-	actualAd, _ := service.find(ad.Id.String())
+	actualAd, _ := service.Find(ad.Id.String())
 
 	if !reflect.DeepEqual(ad, actualAd) {
-		t.Errorf("Exepected %v, got %v", ad, actualAd)
+		t.Errorf("Expected %v, got %v", ad, actualAd)
 	}
+}
+
+func TestFindRandomAds(t *testing.T) {
+	inMemoryAdRepository := infra.NewInMemoryAdRepository()
+	service := AdService{Repository: inMemoryAdRepository}
+	ad1, _ := domain.NewAd("t1", "d", 1)
+	inMemoryAdRepository.Save(ad1)
+	ad2, _ := domain.NewAd("t2", "d", 1)
+	inMemoryAdRepository.Save(ad2)
+
+	smallAds, _ := service.FindRandom()
+	if len(smallAds) != 2 {
+		t.Errorf("Expected 2, got %v", len(smallAds))
+	}
+
+	ad3, _ := domain.NewAd("t3", "d", 1)
+	inMemoryAdRepository.Save(ad3)
+	ad4, _ := domain.NewAd("t4", "d", 1)
+	inMemoryAdRepository.Save(ad4)
+	ad5, _ := domain.NewAd("t5", "d", 1)
+	inMemoryAdRepository.Save(ad5)
+
+	allAds, _ := service.FindRandom()
+
+	if len(allAds) != 5 {
+		t.Errorf("Expected 5, got %v", len(allAds))
+	}
+
+	ad6, _ := domain.NewAd("t6", "d", 1)
+	inMemoryAdRepository.Save(ad6)
+
+	bigAds, _ := service.FindRandom()
+
+	if len(bigAds) != 5 {
+		t.Errorf("Expected 5, got %v", len(bigAds))
+	}
+
 }

@@ -8,20 +8,24 @@ import (
 const MaxSearch = 5
 
 type AdService struct {
-	repository domain.AdServiceRepository
+	Repository domain.AdServiceRepository
 }
 
-func (service AdService) post(title string, description string, price float32) domain.Ad {
+func (service AdService) Post(title string, description string, price float32) domain.Ad {
 	ad, _ := domain.NewAd(title, description, price)
-	service.repository.Save(ad)
+	service.Repository.Save(ad)
 	return ad
 }
 
-func (service AdService) find(adId string) (domain.Ad, bool) {
+func (service AdService) Find(adId string) (domain.Ad, bool) {
 	uuidAdId, err := uuid.Parse(adId)
 	if err != nil {
 		return domain.Ad{}, false
 	}
 
-	return service.repository.Find(uuidAdId)
+	return service.Repository.Find(uuidAdId)
+}
+
+func (service AdService) FindRandom() ([]domain.Ad, error) {
+	return service.Repository.Search(5)
 }

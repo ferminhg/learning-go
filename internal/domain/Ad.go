@@ -47,7 +47,7 @@ func NewAd(title string, description string, price float32) (Ad, error) {
 		return Ad{}, invalidPriceError{}
 	}
 
-	adId, err := uuid.NewUUID()
+	adId, err := uuid.NewRandom()
 	if err != nil {
 		return Ad{}, err
 	}
