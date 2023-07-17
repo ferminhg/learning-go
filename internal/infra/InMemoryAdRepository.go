@@ -12,6 +12,12 @@ type InMemoryAdRepository struct {
 	ads map[string]domain.Ad
 }
 
+func NewInMemoryAdRepository() *InMemoryAdRepository {
+	return &InMemoryAdRepository{
+		ads: make(map[string]domain.Ad),
+	}
+}
+
 func (repository InMemoryAdRepository) Search(maxNumber int) ([]domain.Ad, error) {
 	var adds []domain.Ad
 
@@ -38,12 +44,6 @@ func (repository InMemoryAdRepository) Search(maxNumber int) ([]domain.Ad, error
 
 	fmt.Println(adds)
 	return adds, nil
-}
-
-func NewInMemoryAdRepository() *InMemoryAdRepository {
-	return &InMemoryAdRepository{
-		ads: make(map[string]domain.Ad),
-	}
 }
 
 func (repository InMemoryAdRepository) Save(ad domain.Ad) {
