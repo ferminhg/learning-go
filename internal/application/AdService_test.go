@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ferminhg/learning-go/internal/domain"
 	"github.com/ferminhg/learning-go/internal/infra"
+	"github.com/go-faker/faker/v4"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -122,32 +123,18 @@ func TestFindRandomAds(t *testing.T) {
 // Testing AdService using mocking
 type AdServiceTestSuite struct {
 	suite.Suite
+	repository domain.AdServiceRepository
+	service    AdService
 }
 
 func (suite *AdServiceTestSuite) SetupTest() {
 	fmt.Println("⚒️ Setup Test")
+	suite.repository = newMockRepository()
+	suite.service = AdService{suite.repository}
 }
 
 func TestAdServiceTestSuite(t *testing.T) {
 	suite.Run(t, new(AdServiceTestSuite))
-}
-
-type mockRepository struct{ mock.Mock }
-
-func (m mockRepository) Save(ad domain.Ad) error {
-	args := m.Called(ad)
-	return args.Error(0)
-}
-
-func (m mockRepository) Find(uuid uuid.UUID) (domain.Ad, bool) {
-	args := m.Called(uuid)
-	return domain.Ad{Id: uuid}, args.Bool(0)
-}
-
-func (m mockRepository) Search(maxNumber int) ([]domain.Ad, error) {
-	m.Called(5)
-	ads := make([]domain.Ad, 5)
-	return ads, nil
 }
 
 func newMockRepository() *mockRepository {
@@ -197,4 +184,37 @@ func (suite *AdServiceTestSuite) TestGivenAdSWhenSearch() {
 
 	assert.Nil(suite.T(), err)
 	assert.Len(suite.T(), ads, 5)
+}
+
+func (suite *AdServiceTestSuite) TestGivenAdWithLongDesWhenPostThenError() {
+	repository := newMockRepository()
+	service := AdService{repository}
+	repository.On("Save", mock.Anything).Return(nil)
+
+	var longDescription = faker.Paragraph()
+	for len(longDescription) < 50 {
+		faker.ResetUnique()
+		longDescription = faker.Paragraph()
+	}
+	longDescription = longDescription[:51]
+	_, err := service.Post("t", longDescription, 1)
+	assert.IsType(suite.T(), err, domain.InvalidDescriptionError{})
+}
+
+type mockRepository struct{ mock.Mock }
+
+func (m mockRepository) Save(ad domain.Ad) error {
+	args := m.Called(ad)
+	return args.Error(0)
+}
+
+func (m mockRepository) Find(uuid uuid.UUID) (domain.Ad, bool) {
+	args := m.Called(uuid)
+	return domain.Ad{Id: uuid}, args.Bool(0)
+}
+
+func (m mockRepository) Search(maxNumber int) ([]domain.Ad, error) {
+	m.Called(5)
+	ads := make([]domain.Ad, 5)
+	return ads, nil
 }

@@ -20,7 +20,7 @@ func TestInvalidAds(t *testing.T) {
 		},
 		"empty description": {
 			title:       "title",
-			expectedErr: invalidDescriptionError{},
+			expectedErr: InvalidDescriptionError{},
 		},
 		"invalid price": {
 			title:       "t",

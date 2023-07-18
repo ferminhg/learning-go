@@ -13,6 +13,8 @@ type Ad struct {
 	CreatedDate time.Time
 }
 
+const descriptionMaxSize = 50
+
 type invalidTitleError struct {
 }
 
@@ -20,10 +22,10 @@ func (i invalidTitleError) Error() string {
 	return "invalid title"
 }
 
-type invalidDescriptionError struct {
+type InvalidDescriptionError struct {
 }
 
-func (i invalidDescriptionError) Error() string {
+func (i InvalidDescriptionError) Error() string {
 	return "invalid description"
 }
 
@@ -39,8 +41,8 @@ func NewAd(title string, description string, price float32) (Ad, error) {
 		return Ad{}, invalidTitleError{}
 	}
 
-	if len(description) == 0 {
-		return Ad{}, invalidDescriptionError{}
+	if len(description) == 0 || len(description) > descriptionMaxSize {
+		return Ad{}, InvalidDescriptionError{}
 	}
 
 	if price <= 0 {
