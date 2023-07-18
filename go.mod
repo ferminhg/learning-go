@@ -3,7 +3,6 @@ module github.com/ferminhg/learning-go
 go 1.19
 
 require (
-	github.com/bxcodec/faker/v4 v4.0.0-beta.3 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-faker/faker/v4 v4.1.1 // indirect
 	github.com/google/uuid v1.3.0 // indirect

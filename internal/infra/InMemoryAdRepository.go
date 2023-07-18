@@ -1,7 +1,6 @@
 package infra
 
 import (
-	"fmt"
 	"github.com/ferminhg/learning-go/internal/domain"
 	"github.com/google/uuid"
 	"math/rand"
@@ -19,13 +18,13 @@ func NewInMemoryAdRepository() *InMemoryAdRepository {
 }
 
 func (repository InMemoryAdRepository) Search(maxNumber int) ([]domain.Ad, error) {
-	var adds []domain.Ad
+	var ads []domain.Ad
 
 	if len(repository.ads) <= maxNumber {
 		for _, value := range repository.ads {
-			adds = append(adds, value)
+			ads = append(ads, value)
 		}
-		return adds, nil
+		return ads, nil
 	}
 
 	keys := make([]string, 0, len(repository.ads))
@@ -38,21 +37,21 @@ func (repository InMemoryAdRepository) Search(maxNumber int) ([]domain.Ad, error
 
 	for i := 0; i < maxNumber && len(keys) > 0; i++ {
 		randomIndex := r.Intn(len(keys))
-		adds = append(adds, repository.ads[keys[randomIndex]])
+		ads = append(ads, repository.ads[keys[randomIndex]])
 		keys = append(keys[:randomIndex], keys[randomIndex+1:]...)
 	}
 
-	fmt.Println(adds)
-	return adds, nil
+	//fmt.Println(ads)
+	return ads, nil
 }
 
 func (repository InMemoryAdRepository) Save(ad domain.Ad) {
-	fmt.Println("💾 saving ...", ad)
+	//fmt.Println("💾 saving ...", ad)
 	repository.ads[ad.Id.String()] = ad
 }
 
 func (repository InMemoryAdRepository) Find(uuid uuid.UUID) (domain.Ad, bool) {
-	fmt.Println("🔎 finding ...", uuid.String())
+	//fmt.Println("🔎 finding ...", uuid.String())
 	val, ok := repository.ads[uuid.String()]
 	return val, ok
 }

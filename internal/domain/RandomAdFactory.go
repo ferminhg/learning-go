@@ -2,7 +2,7 @@ package domain
 
 import (
 	"fmt"
-	"github.com/bxcodec/faker/v4"
+	"github.com/go-faker/faker/v4"
 )
 
 func RandomAdFactory() Ad {
