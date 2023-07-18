@@ -30,9 +30,9 @@ going to revisit the previous challenge and to cover with unit tests both, the i
 
 To practice with error handling, three scenarios are proposed:
 
-- [ ] Our product team comes with a new business rule: an ad cannot contain a description longer than 50 characters. How can we deal with that? Where should we place this logic and how an error could be handled there? Tip: since it is a business rule, it should be placed as near to the business as possible.
-- [ ] Let's talk about the `find an ad by ID` use case. What happens if given an ID there is no Ad in the repository to return? Is this an exceptional (error) flow? Should be handled as an error? If not, how can we handle this scenario?
-- [ ] Let's pretend we are not implementing an in-memory repository, but a repository based on some classic database (i.e. PostgreSQL). Eventually, every single method of the repository could return an error due to connectivity issues, or timeouts, etc. So, let's model our repository to be able of returning errors on those scenarios and see how can we handle  them from the use cases.
+- [X] Our product team comes with a new business rule: an ad cannot contain a description longer than 50 characters. How can we deal with that? Where should we place this logic and how an error could be handled there? Tip: since it is a business rule, it should be placed as near to the business as possible.
+- [X] Let's talk about the `find an ad by ID` use case. What happens if given an ID there is no Ad in the repository to return? Is this an exceptional (error) flow? Should be handled as an error? If not, how can we handle this scenario?
+- [X] Let's pretend we are not implementing an in-memory repository, but a repository based on some classic database (i.e. PostgreSQL). Eventually, every single method of the repository could return an error due to connectivity issues, or timeouts, etc. So, let's model our repository to be able of returning errors on those scenarios and see how can we handle  them from the use cases.
 
 ## Resources
 1. Testify documentation for mock and asssert packages: https://github.com/stretchr/testify
