@@ -23,8 +23,8 @@ as errors and which not.
 As we mentioned above in the introduction, to practice testing with the standard library and `stretchr/testify` we are
 going to revisit the previous challenge and to cover with unit tests both, the in-memory repository and the use cases:
 
-- [ ] Let's start with the repository which is a simple unit test suite since it has no collaborators and no mocks are needed.
-- [ ] Then, to test our use cases, typically, we are going to need to mock the repository to reduce the complexity of the test suite. Take a look at the resources section to find some useful documentation about building mocks with `stretchr/testify`.
+- [X] Let's start with the repository which is a simple unit test suite since it has no collaborators and no mocks are needed.
+- [X] Then, to test our use cases, typically, we are going to need to mock the repository to reduce the complexity of the test suite. Take a look at the resources section to find some useful documentation about building mocks with `stretchr/testify`.
 
 ### Error handling
 

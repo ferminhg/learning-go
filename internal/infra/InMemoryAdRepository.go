@@ -45,9 +45,10 @@ func (repository InMemoryAdRepository) Search(maxNumber int) ([]domain.Ad, error
 	return ads, nil
 }
 
-func (repository InMemoryAdRepository) Save(ad domain.Ad) {
+func (repository InMemoryAdRepository) Save(ad domain.Ad) error {
 	//fmt.Println("💾 saving ...", ad)
 	repository.ads[ad.Id.String()] = ad
+	return nil
 }
 
 func (repository InMemoryAdRepository) Find(uuid uuid.UUID) (domain.Ad, bool) {

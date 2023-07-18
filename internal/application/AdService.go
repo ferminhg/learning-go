@@ -14,6 +14,7 @@ func (service AdService) Post(title string, description string, price float32) (
 	if err != nil {
 		return domain.Ad{}, err
 	}
+
 	service.Repository.Save(ad)
 	return ad, nil
 }

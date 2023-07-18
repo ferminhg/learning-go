@@ -1,8 +1,13 @@
 package application
 
 import (
+	"fmt"
 	"github.com/ferminhg/learning-go/internal/domain"
 	"github.com/ferminhg/learning-go/internal/infra"
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/suite"
 	"reflect"
 	"testing"
 )
@@ -112,4 +117,84 @@ func TestFindRandomAds(t *testing.T) {
 		t.Errorf("Expected 5, got %v", len(bigAds))
 	}
 
+}
+
+// Testing AdService using mocking
+type AdServiceTestSuite struct {
+	suite.Suite
+}
+
+func (suite *AdServiceTestSuite) SetupTest() {
+	fmt.Println("⚒️ Setup Test")
+}
+
+func TestAdServiceTestSuite(t *testing.T) {
+	suite.Run(t, new(AdServiceTestSuite))
+}
+
+type mockRepository struct{ mock.Mock }
+
+func (m mockRepository) Save(ad domain.Ad) error {
+	args := m.Called(ad)
+	return args.Error(0)
+}
+
+func (m mockRepository) Find(uuid uuid.UUID) (domain.Ad, bool) {
+	args := m.Called(uuid)
+	return domain.Ad{Id: uuid}, args.Bool(0)
+}
+
+func (m mockRepository) Search(maxNumber int) ([]domain.Ad, error) {
+	m.Called(5)
+	ads := make([]domain.Ad, 5)
+	return ads, nil
+}
+
+func newMockRepository() *mockRepository {
+	return &mockRepository{}
+}
+
+func (suite *AdServiceTestSuite) TestGivenAdThenPost() {
+	repository := newMockRepository()
+	service := AdService{repository}
+
+	repository.On("Save", mock.Anything).Return(nil)
+
+	ad, err := service.Post("t", "d", 1)
+
+	assert.IsType(suite.T(), domain.Ad{}, ad)
+	assert.Nil(suite.T(), err)
+}
+
+func (suite *AdServiceTestSuite) TestGivenAdWhenNotFound() {
+	repository := newMockRepository()
+	service := AdService{repository}
+	_, ok := service.Find("Not Valid UUID")
+	assert.False(suite.T(), ok)
+}
+
+func (suite *AdServiceTestSuite) TestGivenAdWhenFound() {
+	repository := newMockRepository()
+	service := AdService{repository}
+
+	randomId, _ := uuid.NewRandom()
+	repository.On("Find", randomId).Return(true)
+
+	ad, ok := service.Find(randomId.String())
+
+	assert.True(suite.T(), ok)
+	assert.IsType(suite.T(), domain.Ad{}, ad)
+	assert.Equal(suite.T(), randomId, ad.Id)
+}
+
+func (suite *AdServiceTestSuite) TestGivenAdSWhenSearch() {
+	repository := newMockRepository()
+	service := AdService{repository}
+
+	repository.On("Search", 5).Return([5]domain.Ad{})
+
+	ads, err := service.FindRandom()
+
+	assert.Nil(suite.T(), err)
+	assert.Len(suite.T(), ads, 5)
 }
