@@ -6,11 +6,11 @@ import (
 )
 
 type Ad struct {
-	Id          uuid.UUID
-	Title       string
-	Description string
-	Price       float32
-	CreatedDate time.Time
+	Id          uuid.UUID `json:"id"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	Price       float32   `json:"price"`
+	CreatedDate time.Time `json:"postedAt"`
 }
 
 const descriptionMaxSize = 50

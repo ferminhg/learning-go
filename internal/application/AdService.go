@@ -9,6 +9,12 @@ type AdService struct {
 	Repository domain.AdServiceRepository
 }
 
+func NewAdService(repository domain.AdServiceRepository) AdService {
+	return AdService{
+		Repository: repository,
+	}
+}
+
 func (service AdService) Post(title string, description string, price float32) (domain.Ad, error) {
 	ad, err := domain.NewAd(title, description, price)
 	if err != nil {
