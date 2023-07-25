@@ -2,7 +2,9 @@ package server
 
 import (
 	"fmt"
-	"github.com/ferminhg/learning-go/internal/infra/routing"
+	"github.com/ferminhg/learning-go/internal/application"
+	"github.com/ferminhg/learning-go/internal/infra"
+	"github.com/ferminhg/learning-go/internal/infra/handler"
 	"github.com/gin-gonic/gin"
 	"log"
 )
@@ -15,14 +17,13 @@ type Server struct {
 }
 
 func (s Server) registerRoutes() {
-	controller := routing.New()
+	service := application.NewAdService(infra.NewInMemoryAdRepository())
 
-	s.engine.GET("/health", controller.GetHealthEndpoint)
-
-	s.engine.PUT("/ads", controller.PostNewAdsEndpoint)
-	s.engine.POST("/ads", controller.PostNewAdsEndpoint)
-	s.engine.GET("/ads/:id", controller.GetAdByIdEndpoint)
-	s.engine.GET("/ads", controller.GetAdsEndpoint)
+	s.engine.GET("/health", handler.GetHealthEndpoint())
+	s.engine.PUT("/ads", handler.PostNewAdsEndpoint(service))
+	s.engine.POST("/ads", handler.PostNewAdsEndpoint(service))
+	s.engine.GET("/ads/:id", handler.GetAdByIdEndpoint(service))
+	s.engine.GET("/ads", handler.GetAdsEndpoint(service))
 }
 
 func New(host string, port uint) Server {
