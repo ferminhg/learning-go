@@ -16,16 +16,6 @@ type Server struct {
 	//deps
 }
 
-func (s Server) registerRoutes() {
-	service := application.NewAdService(infra.NewInMemoryAdRepository())
-
-	s.engine.GET("/health", handler.GetHealthEndpoint())
-	s.engine.PUT("/ads", handler.PostNewAdsEndpoint(service))
-	s.engine.POST("/ads", handler.PostNewAdsEndpoint(service))
-	s.engine.GET("/ads/:id", handler.GetAdByIdEndpoint(service))
-	s.engine.GET("/ads", handler.GetAdsEndpoint(service))
-}
-
 func New(host string, port uint) Server {
 	srv := Server{
 		engine:   gin.Default(),
@@ -34,6 +24,16 @@ func New(host string, port uint) Server {
 
 	srv.registerRoutes()
 	return srv
+}
+
+func (s *Server) registerRoutes() {
+	service := application.NewAdService(infra.NewInMemoryAdRepository())
+
+	s.engine.GET("/health", handler.GetHealthEndpoint())
+	s.engine.PUT("/ads", handler.PostNewAdsEndpoint(service))
+	s.engine.POST("/ads", handler.PostNewAdsEndpoint(service))
+	s.engine.GET("/ads/:id", handler.GetAdByIdEndpoint(service))
+	s.engine.GET("/ads", handler.GetAdsEndpoint(service))
 }
 
 func (s *Server) Run() error {
