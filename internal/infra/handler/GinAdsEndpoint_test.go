@@ -120,3 +120,27 @@ func TestHandler_FindById(t *testing.T) {
 		assert.Equal(t, http.StatusOK, res.StatusCode)
 	})
 }
+
+func TestHandler_GetAds(t *testing.T) {
+	adRepository := new(storagemocks.AdServiceRepository)
+	adRepository.On("Search", 5).Return([]domain.Ad{domain.RandomAdFactory()}, nil)
+
+	service := application.NewAdService(adRepository)
+
+	gin.SetMode(gin.TestMode)
+	r := gin.New()
+	r.GET("/ads", GetAdsEndpoint(service))
+
+	t.Run("it return a Ad list empty", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/ads", nil)
+		require.NoError(t, err)
+
+		rec := httptest.NewRecorder()
+		r.ServeHTTP(rec, req)
+
+		res := rec.Result()
+		defer res.Body.Close()
+
+		assert.Equal(t, http.StatusOK, res.StatusCode)
+	})
+}
