@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/ferminhg/learning-go/internal/application"
+	"github.com/ferminhg/learning-go/internal/domain"
 	"github.com/ferminhg/learning-go/internal/infra/storage/storagemocks"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -74,5 +76,47 @@ func TestHandler_PostNewAd(t *testing.T) {
 		err = json.Unmarshal(jsonData, &data)
 		require.NoError(t, err)
 		assert.Contains(t, data["message"], "Ad is valid 🎊")
+	})
+}
+
+func TestHandler_FindById(t *testing.T) {
+	NotFoundAdId, _ := uuid.NewRandom()
+
+	adRepository := new(storagemocks.AdServiceRepository)
+	adRepository.On("Find", mock.Anything).Return(domain.Ad{}, false)
+
+	service := application.NewAdService(adRepository)
+
+	gin.SetMode(gin.TestMode)
+	r := gin.New()
+	r.GET("/ads/:id", GetAdByIdEndpoint(service))
+
+	t.Run("given a invalid id it return 404", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/ads/"+NotFoundAdId.String(), nil)
+		require.NoError(t, err)
+
+		rec := httptest.NewRecorder()
+		r.ServeHTTP(rec, req)
+
+		res := rec.Result()
+		defer res.Body.Close()
+
+		assert.Equal(t, http.StatusNotFound, res.StatusCode)
+	})
+	ad := domain.RandomAdFactory()
+	adRepository.On("Find").Unset()
+	adRepository.On("Find", mock.Anything).Return(ad, true)
+
+	t.Run("given a valid id it return de Ad", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/ads/"+ad.Id.String(), nil)
+		require.NoError(t, err)
+
+		rec := httptest.NewRecorder()
+		r.ServeHTTP(rec, req)
+
+		res := rec.Result()
+		defer res.Body.Close()
+
+		assert.Equal(t, http.StatusOK, res.StatusCode)
 	})
 }
