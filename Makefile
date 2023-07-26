@@ -12,11 +12,14 @@ vet: fmt
 	go vet ./...
 .PHONY:vet
 
-
-server:
+devserver:
 	go run cmd/api/server.go
-.PHONY:server
+.PHONY:devserver
 
 test:
 	go test ./...
 .PHONY:test
+
+build: test
+	go build -o build/server cmd/api/server.go
+.PHONE:build

@@ -3,7 +3,7 @@ package bootstrap
 import "github.com/ferminhg/learning-go/internal/infra/server"
 
 const (
-	host = "localhost"
+	host = "0.0.0.0"
 	port = 8080
 )
 
