@@ -3,13 +3,13 @@ package main
 import (
 	"fmt"
 	"github.com/ferminhg/learning-go/internal/application"
-	"github.com/ferminhg/learning-go/internal/infra"
+	"github.com/ferminhg/learning-go/internal/infra/storage"
 )
 
 func main() {
 	fmt.Println("Marketplace: wop wop 🌍")
 
-	repository := infra.NewInMemoryAdRepository()
+	repository := storage.NewInMemoryAdRepository()
 	service := application.AdService{Repository: repository}
 
 	fmt.Println("💾 Posting Adds")

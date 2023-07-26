@@ -3,7 +3,7 @@ package application
 import (
 	"fmt"
 	"github.com/ferminhg/learning-go/internal/domain"
-	"github.com/ferminhg/learning-go/internal/infra"
+	"github.com/ferminhg/learning-go/internal/infra/storage"
 	"github.com/go-faker/faker/v4"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -26,7 +26,7 @@ func TestPostAd(t *testing.T) {
 		},
 	}
 	for name, tt := range tests {
-		inMemoryAdRepository := infra.NewInMemoryAdRepository()
+		inMemoryAdRepository := storage.NewInMemoryAdRepository()
 		service := AdService{Repository: inMemoryAdRepository}
 		t.Run(name, func(t *testing.T) {
 			ad, _ := service.Post(tt.title, tt.description, tt.price)
@@ -59,7 +59,7 @@ func TestFindAd(t *testing.T) {
 		},
 	}
 	for name, tt := range tests {
-		inMemoryAdRepository := infra.NewInMemoryAdRepository()
+		inMemoryAdRepository := storage.NewInMemoryAdRepository()
 		service := AdService{Repository: inMemoryAdRepository}
 		t.Run(name, func(t *testing.T) {
 			_, ok := service.Find(tt.id)
@@ -71,7 +71,7 @@ func TestFindAd(t *testing.T) {
 }
 
 func TestFindValidAd(t *testing.T) {
-	inMemoryAdRepository := infra.NewInMemoryAdRepository()
+	inMemoryAdRepository := storage.NewInMemoryAdRepository()
 	service := AdService{Repository: inMemoryAdRepository}
 	ad, _ := domain.NewAd("t", "d", 1)
 	inMemoryAdRepository.Save(ad)
@@ -84,7 +84,7 @@ func TestFindValidAd(t *testing.T) {
 }
 
 func TestFindRandomAds(t *testing.T) {
-	inMemoryAdRepository := infra.NewInMemoryAdRepository()
+	inMemoryAdRepository := storage.NewInMemoryAdRepository()
 	service := AdService{Repository: inMemoryAdRepository}
 	ad1, _ := domain.NewAd("t1", "d", 1)
 	inMemoryAdRepository.Save(ad1)
