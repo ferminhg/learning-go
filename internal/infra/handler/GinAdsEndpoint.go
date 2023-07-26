@@ -23,7 +23,7 @@ type PostNewAdsRequest struct {
 func PostNewAdsEndpoint(service application.AdService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req PostNewAdsRequest
-		if err := ctx.ShouldBind(&req); err != nil {
+		if err := ctx.BindJSON(&req); err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}

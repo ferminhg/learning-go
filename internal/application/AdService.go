@@ -21,8 +21,8 @@ func (service AdService) Post(title string, description string, price float32) (
 		return domain.Ad{}, err
 	}
 
-	service.Repository.Save(ad)
-	return ad, nil
+	err = service.Repository.Save(ad)
+	return ad, err
 }
 
 func (service AdService) Find(adId string) (domain.Ad, bool) {
