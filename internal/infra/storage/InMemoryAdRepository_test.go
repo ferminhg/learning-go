@@ -1,4 +1,4 @@
-package infra
+package storage
 
 import (
 	"github.com/ferminhg/learning-go/internal/domain"

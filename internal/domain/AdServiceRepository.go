@@ -7,3 +7,5 @@ type AdServiceRepository interface {
 	Find(uuid uuid.UUID) (Ad, bool)
 	Search(maxNumber int) ([]Ad, error)
 }
+
+//go:generate mockery --case=snake --outpkg=storagemocks --name=AdServiceRepository --output=../infra/storage/storagemocks
