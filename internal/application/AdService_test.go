@@ -3,11 +3,13 @@ package application
 import (
 	"fmt"
 	"github.com/ferminhg/learning-go/internal/domain"
+	"github.com/ferminhg/learning-go/internal/infra/generator"
 	"github.com/ferminhg/learning-go/internal/infra/storage/inmemory"
 	"github.com/go-faker/faker/v4"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	"reflect"
 	"testing"
@@ -130,7 +132,7 @@ type AdServiceTestSuite struct {
 func (suite *AdServiceTestSuite) SetupTest() {
 	fmt.Println("⚒️ Setup Test")
 	suite.repository = newMockRepository()
-	suite.service = AdService{suite.repository}
+	suite.service = AdService{Repository: suite.repository}
 }
 
 func TestAdServiceTestSuite(t *testing.T) {
@@ -143,7 +145,7 @@ func newMockRepository() *mockRepository {
 
 func (suite *AdServiceTestSuite) TestGivenAdThenPost() {
 	repository := newMockRepository()
-	service := AdService{repository}
+	service := AdService{Repository: repository}
 
 	repository.On("Save", mock.Anything).Return(nil)
 
@@ -155,14 +157,14 @@ func (suite *AdServiceTestSuite) TestGivenAdThenPost() {
 
 func (suite *AdServiceTestSuite) TestGivenAdWhenNotFound() {
 	repository := newMockRepository()
-	service := AdService{repository}
+	service := AdService{Repository: repository}
 	_, ok := service.Find("Not Valid UUID")
 	assert.False(suite.T(), ok)
 }
 
 func (suite *AdServiceTestSuite) TestGivenAdWhenFound() {
 	repository := newMockRepository()
-	service := AdService{repository}
+	service := AdService{Repository: repository}
 
 	randomId, _ := uuid.NewRandom()
 	repository.On("Find", randomId).Return(true)
@@ -176,7 +178,7 @@ func (suite *AdServiceTestSuite) TestGivenAdWhenFound() {
 
 func (suite *AdServiceTestSuite) TestGivenAdSWhenSearch() {
 	repository := newMockRepository()
-	service := AdService{repository}
+	service := AdService{Repository: repository}
 
 	repository.On("Search", 5).Return([5]domain.Ad{})
 
@@ -188,7 +190,7 @@ func (suite *AdServiceTestSuite) TestGivenAdSWhenSearch() {
 
 func (suite *AdServiceTestSuite) TestGivenAdWithLongDesWhenPostThenError() {
 	repository := newMockRepository()
-	service := AdService{repository}
+	service := AdService{Repository: repository}
 	repository.On("Save", mock.Anything).Return(nil)
 
 	var longDescription = faker.Paragraph()
@@ -217,4 +219,18 @@ func (m mockRepository) Search(maxNumber int) ([]domain.Ad, error) {
 	m.Called(5)
 	ads := make([]domain.Ad, 5)
 	return ads, nil
+}
+
+func TestAdService_DescriptionGenerator(t *testing.T) {
+	service := AdService{
+		generator: generator.FakerDescriptionGenerator{},
+	}
+
+	t.Run("should return at least 3 descriptions", func(t *testing.T) {
+		title := "t1"
+		got, err := service.DescriptionGenerator(title)
+		require.NoError(t, err)
+
+		assert.LessOrEqual(t, len(got), 3)
+	})
 }
