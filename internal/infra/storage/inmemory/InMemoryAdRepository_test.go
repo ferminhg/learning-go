@@ -1,4 +1,4 @@
-package storage
+package inmemory
 
 import (
 	"github.com/ferminhg/learning-go/internal/domain"

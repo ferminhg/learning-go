@@ -12,7 +12,7 @@ vet: fmt
 	go vet ./...
 .PHONY:vet
 
-devserver:
+dev:
 	go run cmd/api/server.go
 .PHONY:devserver
 

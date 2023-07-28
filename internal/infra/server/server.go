@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/ferminhg/learning-go/internal/application"
 	"github.com/ferminhg/learning-go/internal/infra/handler"
-	"github.com/ferminhg/learning-go/internal/infra/storage"
+	"github.com/ferminhg/learning-go/internal/infra/storage/inmemory"
 	"github.com/gin-gonic/gin"
 	"log"
 )
@@ -27,7 +27,7 @@ func New(host string, port uint) Server {
 }
 
 func (s *Server) registerRoutes() {
-	service := application.NewAdService(storage.NewInMemoryAdRepository())
+	service := application.NewAdService(inmemory.NewInMemoryAdRepository())
 
 	s.engine.GET("/health", handler.GetHealthEndpoint())
 	s.engine.PUT("/ads", handler.PostNewAdsEndpoint(service))
