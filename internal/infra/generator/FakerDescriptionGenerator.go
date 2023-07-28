@@ -1,6 +1,7 @@
 package generator
 
 import (
+	"context"
 	"fmt"
 	"github.com/ferminhg/learning-go/internal/domain"
 	"github.com/go-faker/faker/v4"
@@ -18,19 +19,31 @@ func NewFakerDescriptionGenerator() *FakerDescriptionGenerator {
 
 func (f FakerDescriptionGenerator) Run(title string) ([]domain.RandomDescription, error) {
 	var descriptions []domain.RandomDescription
-
 	ch := make(chan domain.RandomDescription)
 
+	ctxTimeout, cancel := context.WithTimeout(context.Background(), time.Millisecond*350)
+	defer cancel()
+
 	for i := 0; i < 3; i++ {
-		go f.generate(title, ch)
-		descriptions = append(descriptions, <-ch)
+		go f.generate(ctxTimeout, title, ch)
+		select {
+		case <-ctxTimeout.Done():
+			fmt.Printf("Context cancelled: %v\n", ctxTimeout.Err())
+		case result := <-ch:
+			descriptions = append(descriptions, result)
+			//fmt.Printf("Received: %s\n", result)
+		}
+
 	}
 
 	return descriptions, nil
 }
 
-func (f FakerDescriptionGenerator) generate(_ string, ch chan domain.RandomDescription) {
+func (f FakerDescriptionGenerator) generate(
+	ctx context.Context,
+	_ string,
+	ch chan domain.RandomDescription,
+) {
 	random := rand.Intn(1000)
-	fmt.Println(time.Now(), random)
 	ch <- domain.NewRandomDescription(faker.Sentence(), float32(random)/1000.0)
 }
