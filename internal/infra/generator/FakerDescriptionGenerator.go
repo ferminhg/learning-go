@@ -10,11 +10,14 @@ import (
 )
 
 type FakerDescriptionGenerator struct {
+	delay bool
 }
 
-func NewFakerDescriptionGenerator() *FakerDescriptionGenerator {
+func New(delay bool) *FakerDescriptionGenerator {
 	faker.ResetUnique()
-	return &FakerDescriptionGenerator{}
+	return &FakerDescriptionGenerator{
+		delay,
+	}
 }
 
 func (f FakerDescriptionGenerator) Run(title string) ([]domain.RandomDescription, error) {
@@ -43,6 +46,8 @@ func (f FakerDescriptionGenerator) generate(
 	ch chan domain.RandomDescription,
 ) {
 	random := rand.Intn(1000)
-	time.Sleep(time.Millisecond * time.Duration(random))
+	if f.delay {
+		time.Sleep(time.Millisecond * time.Duration(random))
+	}
 	ch <- domain.NewRandomDescription(faker.Sentence(), float32(random)/1000.0)
 }

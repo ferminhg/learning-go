@@ -21,7 +21,7 @@ import (
 func TestHandler_PostNewAd(t *testing.T) {
 	adRepository := new(storagemocks.AdServiceRepository)
 	adRepository.On("Save", mock.Anything).Return(nil)
-	service := application.NewAdService(adRepository, generator.NewFakerDescriptionGenerator())
+	service := application.NewAdService(adRepository, generator.New(false))
 
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
@@ -86,7 +86,7 @@ func TestHandler_FindById(t *testing.T) {
 	adRepository := new(storagemocks.AdServiceRepository)
 	adRepository.On("Find", mock.Anything).Return(domain.Ad{}, false)
 
-	service := application.NewAdService(adRepository, generator.NewFakerDescriptionGenerator())
+	service := application.NewAdService(adRepository, generator.New(false))
 
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
@@ -126,7 +126,7 @@ func TestHandler_GetAds(t *testing.T) {
 	adRepository := new(storagemocks.AdServiceRepository)
 	adRepository.On("Search", 5).Return([]domain.Ad{domain.RandomAdFactory()}, nil)
 
-	service := application.NewAdService(adRepository, generator.NewFakerDescriptionGenerator())
+	service := application.NewAdService(adRepository, generator.New(false))
 
 	gin.SetMode(gin.TestMode)
 	r := gin.New()

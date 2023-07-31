@@ -30,7 +30,7 @@ func New(host string, port uint) Server {
 func (s *Server) registerRoutes() {
 	service := application.NewAdService(
 		inmemory.NewInMemoryAdRepository(),
-		generator.NewFakerDescriptionGenerator(),
+		generator.New(true),
 	)
 
 	s.engine.GET("/health", handler.GetHealthEndpoint())
