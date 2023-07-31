@@ -51,10 +51,14 @@ func (s AdService) DescriptionGenerator(title string) (domain.RandomDescription,
 		return domain.RandomDescription{}, err
 	}
 
-	if len(descriptions) < 1 {
+	switch len(descriptions) {
+	case 0:
 		return domain.RandomDescription{}, errors.New("timeout generating descriptions")
-	}
+	case 1:
+		return descriptions[0], nil
+	default:
+		r := rand.Intn(len(descriptions) - 1)
+		return descriptions[r], nil
 
-	r := rand.Intn(len(descriptions) - 1)
-	return descriptions[r], nil
+	}
 }

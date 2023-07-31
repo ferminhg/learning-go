@@ -43,6 +43,6 @@ func (f FakerDescriptionGenerator) generate(
 	ch chan domain.RandomDescription,
 ) {
 	random := rand.Intn(1000)
-	//time.Sleep(time.Millisecond * 500)
+	time.Sleep(time.Millisecond * time.Duration(random))
 	ch <- domain.NewRandomDescription(faker.Sentence(), float32(random)/1000.0)
 }

@@ -28,7 +28,7 @@ func main() {
 			if e, ok := err.(*handlers.JSONParsingError); ok {
 				// We have access custom error info
 				c.JSON(http.StatusBadRequest, e.Error())
-			} else if e, ok := err.(*infrastructure.InfrastructureError); ok {
+			} else if _, ok := err.(*infrastructure.InfrastructureError); ok {
 				// e.OriginalError
 			} else {
 				c.JSON(http.StatusInternalServerError, err.Error())
