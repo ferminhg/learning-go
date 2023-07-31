@@ -38,6 +38,7 @@ func (s *Server) registerRoutes() {
 	s.engine.POST("/ads", handler.PostNewAdsEndpoint(service))
 	s.engine.GET("/ads/:id", handler.GetAdByIdEndpoint(service))
 	s.engine.GET("/ads", handler.GetAdsEndpoint(service))
+	s.engine.POST("/description-generator", handler.PostDescriptionGenerator(service))
 }
 
 func (s *Server) Run() error {

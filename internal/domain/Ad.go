@@ -8,7 +8,7 @@ import (
 type Ad struct {
 	Id          uuid.UUID `json:"id"`
 	Title       string    `json:"title"`
-	Description string    `json:"description"`
+	Description string    `json:"Description"`
 	Price       float32   `json:"price"`
 	CreatedDate time.Time `json:"postedAt"`
 }
@@ -26,7 +26,7 @@ type InvalidDescriptionError struct {
 }
 
 func (i InvalidDescriptionError) Error() string {
-	return "invalid description"
+	return "invalid Description"
 }
 
 type invalidPriceError struct {

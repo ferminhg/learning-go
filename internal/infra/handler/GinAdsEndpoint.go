@@ -60,8 +60,22 @@ func GetAdByIdEndpoint(service application.AdService) gin.HandlerFunc {
 		ad, ok := service.Find(adId)
 		if !ok {
 			ctx.JSON(http.StatusNotFound, gin.H{"message": "Ad not found: " + adId})
+			return
 		}
 
 		ctx.JSON(http.StatusOK, ad)
+	}
+}
+
+func PostDescriptionGenerator(service application.AdService) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		description, err := service.DescriptionGenerator("")
+		if err != nil {
+			ctx.JSON(http.StatusGatewayTimeout, gin.H{"message": err.Error()})
+			return
+		}
+
+		ctx.JSON(http.StatusOK, description)
+
 	}
 }

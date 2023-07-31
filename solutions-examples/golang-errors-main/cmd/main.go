@@ -10,7 +10,7 @@ import (
 
 // curl -X POST -H "Content-Type: application/json" -d '{
 //   "title": "Example Title",
-//   "description": "Example Description",
+//   "description": "Example description",
 //   "price": 100
 // }' http://localhost:8080/ads
 

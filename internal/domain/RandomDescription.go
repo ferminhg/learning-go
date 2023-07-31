@@ -1,10 +1,10 @@
 package domain
 
 type RandomDescription struct {
-	description string
-	confidence  float32
+	Description string  `json:"description"`
+	Confidence  float32 `json:"confidence"`
 }
 
 func NewRandomDescription(description string, confidence float32) RandomDescription {
-	return RandomDescription{description: description, confidence: confidence}
+	return RandomDescription{Description: description, Confidence: confidence}
 }

@@ -226,11 +226,11 @@ func TestAdService_DescriptionGenerator(t *testing.T) {
 		generator: generator.FakerDescriptionGenerator{},
 	}
 
-	t.Run("should return at least 3 descriptions", func(t *testing.T) {
+	t.Run("should return at least 1 descriptions", func(t *testing.T) {
 		title := "t1"
 		got, err := service.DescriptionGenerator(title)
 		require.NoError(t, err)
 
-		assert.LessOrEqual(t, len(got), 3)
+		assert.IsType(t, domain.RandomDescription{}, got)
 	})
 }

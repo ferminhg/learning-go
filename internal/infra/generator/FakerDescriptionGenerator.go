@@ -31,9 +31,7 @@ func (f FakerDescriptionGenerator) Run(title string) ([]domain.RandomDescription
 			fmt.Printf("Context cancelled: %v\n", ctxTimeout.Err())
 		case result := <-ch:
 			descriptions = append(descriptions, result)
-			//fmt.Printf("Received: %s\n", result)
 		}
-
 	}
 
 	return descriptions, nil
@@ -45,5 +43,6 @@ func (f FakerDescriptionGenerator) generate(
 	ch chan domain.RandomDescription,
 ) {
 	random := rand.Intn(1000)
+	//time.Sleep(time.Millisecond * 500)
 	ch <- domain.NewRandomDescription(faker.Sentence(), float32(random)/1000.0)
 }
