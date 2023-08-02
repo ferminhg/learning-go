@@ -5,6 +5,7 @@ import (
 	"github.com/IBM/sarama"
 	"log"
 	"strings"
+	"sync"
 )
 
 var (
@@ -33,14 +34,20 @@ func main() {
 	}
 	defer func() { _ = admin.Close() }()
 
-	// execute topic creator
-	for _, t := range strings.Split(topics, ",") {
-		createTopic(t, admin)
-	}
+	topicsToCreate := strings.Split(topics, ",")
 
+	var wg sync.WaitGroup
+	wg.Add(len(topicsToCreate))
+
+	for _, t := range topicsToCreate {
+		createTopic(t, admin, &wg)
+	}
+	wg.Wait()
 }
 
-func createTopic(t string, admin sarama.ClusterAdmin) {
+func createTopic(t string, admin sarama.ClusterAdmin, wg *sync.WaitGroup) {
+	defer wg.Done()
+
 	log.Printf("Creating topic: %s\n", t)
 	if err := admin.CreateTopic(t, &sarama.TopicDetail{
 		NumPartitions:     1,
