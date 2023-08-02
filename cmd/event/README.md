@@ -13,7 +13,7 @@ docker compose run
 Create two topics `topic.access_log.1` and `topic.important.1`:
 
 ```shell
-go run cmd/event/broker/broker.go
+go run cmd/event/broker/broker.go -brokers localhost:9092 -topics topic.access_log.1,topic.important.1
 ```
 
 Run http server producer:
