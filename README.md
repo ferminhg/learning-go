@@ -30,32 +30,32 @@ ecosystem.
 In the `challenges` directory you can find a complete list of the challenges and their instructions. At the
 moment the available challenges are:
 
-#### Challenge #1. Visibility in Go, structs and data structures
+#### ✅ Challenge #1. Visibility in Go, structs and data structures
 
 We are going to work on how Go handles visibility by creating our first module and packages. 
 Furthermore, we will define our first structs and data structures (arrays, maps and slices).
 
-#### Challenge #2. Error handling and testing
+#### ✅ Challenge #2. Error handling and testing
 
-Let's practice with error handling. Then we are going to add first test suites to validate 
+Let's practice error handling. Then we are going to add the first test suites to validate 
 the pieces of code which we have been working on until now.
 
-#### Challenge #3. Building an HTTP API
+#### ✅ Challenge #3. Building an HTTP API
 
-In this third challenge we are going to create our first HTTP API with Gin and to validate it with some fresh new 
+In this third challenge we are going to create our first HTTP API with Gin and validate it with some fresh new 
 contract tests.
 
-#### Challenge #4. Dockerizing our app and using a real database
+#### ✅ Challenge #4. Dockerizing our app and using a real database
 
-Let's use go routines to see if the ad was posted also on other platforms
+Let's use go routines to see if the ad was also posted on other platforms
 
-#### Challenge #5. Go routines
+#### ✅ Challenge #5. Go routines
 
-In this fifth challenge we are going to deal with goroutines to solve a simple problem.
+In this fifth challenge we will deal with goroutines to solve a simple problem.
 
-#### Challenge #6. Introducing Apache Kafka: consumers & producers
+#### 🎯 Challenge #6. Introducing Apache Kafka: consumers & producers
 
-In this sixth challenge we are going to deal with Kafka's consumers and producers using the third party library 
+In this sixth challenge we are going to deal with Kafka's consumers and producers using the third-party library 
 `shopify/sarama`
 
 #### Challenge #7. Integration testing
@@ -64,7 +64,7 @@ Let's add some integration tests for what we implemented!
 
 #### Challenge #8. TDD approach
 
-In this challenge we'll use TDD approach in order to delete an add
+In this challenge, we'll use the TDD approach in order to delete an add
 
 #### Challenge #9. Clean code
 
@@ -77,14 +77,14 @@ To start with this series of challenges, the minimal requirements are:
 
 ### 1. Fork this repository
 
-The way of go with these challenges is by forking this repository and working in your own version of the repository.
+The way to go with these challenges is by forking this repository and working in your own version of the repository.
 This way, all of us can have tons of solutions to learn from!
 
 ### 2. Install Go
 
 Follow instructions from https://go.dev/doc/install. 
 
-On macOS if you are currently using Homebrew is even easier, just type in your terminal:
+On macOS, if you are currently using Homebrew is even easier, just type in your terminal:
 ```bash
 brew install go
 ```
