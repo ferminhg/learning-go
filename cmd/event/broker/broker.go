@@ -1,37 +1,46 @@
 package main
 
 import (
+	"flag"
 	"github.com/IBM/sarama"
 	"log"
+	"strings"
 )
 
 var (
-	TopicAccessLog = "topic.access_log.1"
-	TopicImportant = "topic.important.1"
+	topics = ""
 )
 
 func main() {
 	brokerAddrs := []string{"localhost:9092"}
+
+	flag.StringVar(&topics, "topics", "", "Kafka topics to be created, as a comma separated list")
+	flag.Parse()
+	if len(topics) == 0 {
+		panic("no topics given to be consumed, please set the -topics flag")
+	}
+
+	// Kafka config
 	config := sarama.NewConfig()
-	//config.Version = sarama.V2_1_0_0
 	admin, err := sarama.NewClusterAdmin(brokerAddrs, config)
 	if err != nil {
 		log.Fatal("Error while creating cluster admin: ", err.Error())
 	}
 	defer func() { _ = admin.Close() }()
-	err = admin.CreateTopic(TopicAccessLog, &sarama.TopicDetail{
-		NumPartitions:     1,
-		ReplicationFactor: 1,
-	}, false)
-	if err != nil {
-		log.Fatal("Error while creating topic: ", err.Error())
+
+	// execute topic creator
+	for _, t := range strings.Split(topics, ",") {
+		createTopic(t, admin)
 	}
 
-	err = admin.CreateTopic(TopicImportant, &sarama.TopicDetail{
+}
+
+func createTopic(t string, admin sarama.ClusterAdmin) {
+	log.Printf("Creating topic: %s\n", t)
+	if err := admin.CreateTopic(t, &sarama.TopicDetail{
 		NumPartitions:     1,
 		ReplicationFactor: 1,
-	}, false)
-	if err != nil {
-		log.Fatal("Error while creating topic: ", err.Error())
+	}, false); err != nil {
+		log.Println("Error while creating topic: ", err.Error())
 	}
 }
