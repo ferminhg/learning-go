@@ -16,12 +16,14 @@ type Server struct {
 	engine   *gin.Engine
 
 	//deps
+	brokerList []string
 }
 
-func New(host string, port uint) Server {
+func New(host string, port uint, brokerList []string) Server {
 	srv := Server{
-		engine:   gin.Default(),
-		httpAddr: fmt.Sprintf("%s:%d", host, port),
+		engine:     gin.Default(),
+		httpAddr:   fmt.Sprintf("%s:%d", host, port),
+		brokerList: brokerList,
 	}
 
 	srv.registerRoutes()
@@ -32,7 +34,7 @@ func (s *Server) registerRoutes() {
 	service := application.NewAdService(
 		inmemory.NewInMemoryAdRepository(),
 		generator.New(true),
-		eventHandler.NewKafkaEventHandler([]string{"localhost:9092"}),
+		eventHandler.NewKafkaEventHandler(s.brokerList),
 	)
 
 	s.engine.GET("/health", handler.GetHealthEndpoint())

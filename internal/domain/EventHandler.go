@@ -1,5 +1,7 @@
 package domain
 
+var AdTopic = "topic.ads.1"
+
 type ProducerMessage struct {
 	topic string
 	value string //TODO: to remove

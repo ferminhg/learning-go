@@ -77,7 +77,7 @@ func (s AdService) DescriptionGenerator(title string) (domain.RandomDescription,
 
 func (s AdService) sendAdEvent(ad domain.Ad) error {
 	jsonAd, _ := json.Marshal(ad)
-	_, _, err := s.eventHandler.SendMessage(domain.NewProducerMessage("topic.ads.1", string(jsonAd)))
+	_, _, err := s.eventHandler.SendMessage(domain.NewProducerMessage(domain.AdTopic, string(jsonAd)))
 	if err != nil {
 		return fmt.Errorf("failed to store your data: %s", err)
 	}
