@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/ferminhg/learning-go/internal/application"
 	"github.com/ferminhg/learning-go/internal/domain"
+	"github.com/ferminhg/learning-go/internal/infra/eventHandler"
 	"github.com/ferminhg/learning-go/internal/infra/generator"
 	"github.com/ferminhg/learning-go/internal/infra/storage/storagemocks"
 	"github.com/gin-gonic/gin"
@@ -21,7 +22,12 @@ import (
 func TestHandler_PostNewAd(t *testing.T) {
 	adRepository := new(storagemocks.AdServiceRepository)
 	adRepository.On("Save", mock.Anything).Return(nil)
-	service := application.NewAdService(adRepository, generator.New(false))
+	sp := eventHandler.NewMockEventHandler(t)
+	service := application.NewAdService(
+		adRepository,
+		generator.New(false),
+		sp,
+	)
 
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
@@ -49,6 +55,7 @@ func TestHandler_PostNewAd(t *testing.T) {
 	})
 
 	t.Run("given a valid request it return 201", func(t *testing.T) {
+		sp.MockSP.ExpectSendMessageAndSucceed()
 		request := PostNewAdsRequest{
 			Title:       "t1",
 			Description: "d1",
@@ -86,7 +93,11 @@ func TestHandler_FindById(t *testing.T) {
 	adRepository := new(storagemocks.AdServiceRepository)
 	adRepository.On("Find", mock.Anything).Return(domain.Ad{}, false)
 
-	service := application.NewAdService(adRepository, generator.New(false))
+	service := application.NewAdService(
+		adRepository,
+		generator.New(false),
+		eventHandler.NewMockEventHandler(t),
+	)
 
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
@@ -126,7 +137,11 @@ func TestHandler_GetAds(t *testing.T) {
 	adRepository := new(storagemocks.AdServiceRepository)
 	adRepository.On("Search", 5).Return([]domain.Ad{domain.RandomAdFactory()}, nil)
 
-	service := application.NewAdService(adRepository, generator.New(false))
+	service := application.NewAdService(
+		adRepository,
+		generator.New(false),
+		eventHandler.NewMockEventHandler(t),
+	)
 
 	gin.SetMode(gin.TestMode)
 	r := gin.New()

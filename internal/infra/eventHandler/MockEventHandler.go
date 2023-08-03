@@ -22,7 +22,7 @@ func NewMockEventHandler(t mocks.ErrorReporter) MockEventHandler {
 	return MockEventHandler{sp}
 }
 
-func (m *MockEventHandler) SendMessage(msg *domain.ProducerMessage) (partition int32, offset int64, err error) {
+func (m MockEventHandler) SendMessage(msg *domain.ProducerMessage) (partition int32, offset int64, err error) {
 	pm := &sarama.ProducerMessage{
 		Topic: msg.Topic(),
 		Value: sarama.StringEncoder(msg.Value()),
