@@ -3,6 +3,7 @@ package application
 import (
 	"fmt"
 	"github.com/ferminhg/learning-go/internal/domain"
+	"github.com/ferminhg/learning-go/internal/infra/eventHandler"
 	"github.com/ferminhg/learning-go/internal/infra/generator"
 	"github.com/ferminhg/learning-go/internal/infra/storage/inmemory"
 	"github.com/go-faker/faker/v4"
@@ -16,60 +17,41 @@ import (
 )
 
 func TestPostAd(t *testing.T) {
-	tests := map[string]struct {
-		title       string
-		description string
-		price       float32
-	}{
-		"post simple ad": {
-			title:       "title",
-			description: "A description",
-			price:       1.23,
-		},
-	}
-	for name, tt := range tests {
-		inMemoryAdRepository := inmemory.NewInMemoryAdRepository()
-		service := AdService{Repository: inMemoryAdRepository}
-		t.Run(name, func(t *testing.T) {
-			ad, _ := service.Post(tt.title, tt.description, tt.price)
-			if ad.Title != tt.title {
-				t.Errorf("Expected %s -> got %s", tt.title, ad.Title)
-			}
-			if ad.Description != tt.description {
-				t.Errorf("Expected %s -> got %s", tt.title, ad.Title)
-			}
-			if ad.Price != tt.price {
-				t.Errorf("Expected %s -> got %s", tt.title, ad.Title)
-			}
+	inMemoryAdRepository := inmemory.NewInMemoryAdRepository()
+	sp := eventHandler.NewMockEventHandler(t)
 
-			_, ok := inMemoryAdRepository.Find(ad.Id)
-			if !ok {
-				t.Errorf("Ad {%s} not found on repository", ad.Id)
-			}
-		})
+	service := AdService{
+		Repository:   inMemoryAdRepository,
+		eventHandler: &sp,
+	}
+
+	sp.MockSP.ExpectSendMessageAndSucceed()
+
+	title := "t1"
+	description := "d1"
+	price := float32(15.1)
+	ad, _ := service.Post(title, description, price)
+	if ad.Title != title {
+		t.Errorf("Expected %s -> got %s", title, ad.Title)
+	}
+	if ad.Description != description {
+		t.Errorf("Expected %s -> got %s", title, ad.Title)
+	}
+	if ad.Price != price {
+		t.Errorf("Expected %s -> got %s", title, ad.Title)
+	}
+
+	_, ok := inMemoryAdRepository.Find(ad.Id)
+	if !ok {
+		t.Errorf("Ad {%s} not found on repository", ad.Id)
 	}
 }
 
-func TestFindAd(t *testing.T) {
-	tests := map[string]struct {
-		id string
-		ok bool
-	}{
-		"not found ad": {
-			id: "not valid",
-			ok: false,
-		},
-	}
-	for name, tt := range tests {
-		inMemoryAdRepository := inmemory.NewInMemoryAdRepository()
-		service := AdService{Repository: inMemoryAdRepository}
-		t.Run(name, func(t *testing.T) {
-			_, ok := service.Find(tt.id)
-			if ok != tt.ok {
-				t.Errorf("Expected %v, got %v", tt.ok, ok)
-			}
-		})
-	}
+func TestGivenNotValidId(t *testing.T) {
+	inMemoryAdRepository := inmemory.NewInMemoryAdRepository()
+	service := AdService{Repository: inMemoryAdRepository}
+	_, ok := service.Find("not valid")
+	assert.False(t, ok)
 }
 
 func TestFindValidAd(t *testing.T) {
@@ -145,7 +127,10 @@ func newMockRepository() *mockRepository {
 
 func (suite *AdServiceTestSuite) TestGivenAdThenPost() {
 	repository := newMockRepository()
-	service := AdService{Repository: repository}
+	mockEventHandler := eventHandler.NewMockEventHandler(suite.T())
+	mockEventHandler.MockSP.ExpectSendMessageAndSucceed()
+
+	service := AdService{Repository: repository, eventHandler: &mockEventHandler}
 
 	repository.On("Save", mock.Anything).Return(nil)
 

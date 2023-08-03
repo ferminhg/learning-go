@@ -9,19 +9,18 @@ import (
 )
 
 func main() {
-
 	host, port := loadSettings()
 	if err := bootstrap.Run(host, port); err != nil {
 		log.Fatal(err)
 	}
 }
 
-const default_port = 8080
-const default_host = "localhost"
+const defaultPort = 8080
+const defaultHost = "localhost"
 
 func loadSettings() (string, uint) {
-	var host = default_host
-	var port = uint(default_port)
+	var host = defaultHost
+	var port = uint(defaultPort)
 
 	if err := godotenv.Load(".env"); err != nil {
 		log.Println("Error loading .env file")

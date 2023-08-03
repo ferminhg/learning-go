@@ -1,6 +1,7 @@
 package application
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/ferminhg/learning-go/internal/domain"
 	"github.com/google/uuid"
@@ -8,17 +9,20 @@ import (
 )
 
 type AdService struct {
-	Repository domain.AdServiceRepository
-	generator  domain.DescriptionGenerator
+	Repository   domain.AdServiceRepository
+	generator    domain.DescriptionGenerator
+	eventHandler domain.EventHandler
 }
 
 func NewAdService(
 	repository domain.AdServiceRepository,
 	generator domain.DescriptionGenerator,
+	eventHandler domain.EventHandler,
 ) AdService {
 	return AdService{
-		Repository: repository,
-		generator:  generator,
+		Repository:   repository,
+		generator:    generator,
+		eventHandler: eventHandler,
 	}
 }
 
@@ -28,7 +32,16 @@ func (s AdService) Post(title string, description string, price float32) (domain
 		return domain.Ad{}, err
 	}
 
-	err = s.Repository.Save(ad)
+	if err := s.Repository.Save(ad); err != nil {
+		return domain.Ad{}, err
+	}
+
+	jsonAd, _ := json.Marshal(ad)
+	_, _, err = s.eventHandler.SendMessage(domain.NewProducerMessage("topic.ads.1", string(jsonAd)))
+	if err != nil {
+		return domain.Ad{}, err
+	}
+
 	return ad, err
 }
 
