@@ -1,5 +1,12 @@
 # Introducing Apache Kafka: consumers & producers
 
+## Ad Consumer
+
+```shell
+go run cmd/event/consumer/main.go -brokers localhost:9092 -topics topic.ads.1 -group example
+```
+
+
 ## Examples
 
 **How to run:**
@@ -30,3 +37,4 @@ Generate event:
 ```shell
 curl --location --request GET 'http://localhost:8090/'
 ```
+
