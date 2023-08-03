@@ -53,16 +53,16 @@ Let's use go routines to see if the ad was also posted on other platforms
 
 In this fifth challenge we will deal with goroutines to solve a simple problem.
 
-#### 🎯 Challenge #6. Introducing Apache Kafka: consumers & producers
+#### ✅  Challenge #6. Introducing Apache Kafka: consumers & producers
 
 In this sixth challenge we are going to deal with Kafka's consumers and producers using the third-party library 
 `shopify/sarama`
 
-#### Challenge #7. Integration testing
+#### ✅ Challenge #7. Integration testing
 
 Let's add some integration tests for what we implemented!
 
-#### Challenge #8. TDD approach
+#### 🎯 Challenge #8. TDD approach
 
 In this challenge, we'll use the TDD approach in order to delete an add
 
