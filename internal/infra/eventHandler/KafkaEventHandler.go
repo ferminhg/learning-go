@@ -4,6 +4,8 @@ import (
 	"github.com/IBM/sarama"
 	"github.com/ferminhg/learning-go/internal/domain"
 	"log"
+	"math/rand"
+	"time"
 )
 
 type KafkaEventHandler struct {
@@ -39,8 +41,10 @@ func (k KafkaEventHandler) Close() error {
 }
 
 func (k KafkaEventHandler) SendMessage(msg *domain.ProducerMessage) (partition int32, offset int64, err error) {
+	rand.Seed(time.Now().UnixNano())
 	return k.adCollector.SendMessage(&sarama.ProducerMessage{
-		Topic: msg.Topic(),
-		Value: sarama.StringEncoder(msg.Value()),
+		Topic:     msg.Topic(),
+		Value:     sarama.StringEncoder(msg.Value()),
+		Partition: int32(rand.Intn(1)),
 	})
 }

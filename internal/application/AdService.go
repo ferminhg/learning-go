@@ -77,10 +77,11 @@ func (s AdService) DescriptionGenerator(title string) (domain.RandomDescription,
 
 func (s AdService) sendAdEvent(ad domain.Ad) error {
 	jsonAd, _ := json.Marshal(ad)
-	_, _, err := s.eventHandler.SendMessage(domain.NewProducerMessage(domain.AdTopic, string(jsonAd)))
+	partition, offset, err := s.eventHandler.SendMessage(domain.NewProducerMessage(domain.AdTopic, string(jsonAd)))
 	if err != nil {
 		return fmt.Errorf("failed to store your data: %s", err)
 	}
-	//fmt.Printf("Your data is stored with unique identifier important/%d/%d\n", partition, offset)
+
+	fmt.Printf("Your data is stored with unique identifier important/%d/%d\n", partition, offset)
 	return nil
 }

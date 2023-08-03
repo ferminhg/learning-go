@@ -106,9 +106,16 @@ Whenever you have the consumer implemented (and tested), try to set up the envir
 answer the following questions:
 
 * Can you log also the partition of the consumed message?
-* Try to post ads with different IDs so the messages ends in different partitions. Is the application able to consume
-from the all partitions? Note: to answer this question you will need to create the topic with at least 2 partitions.
+
+Yes. SendMessage method return the partition
+
+
+* Try to post ads with different IDs so the messages ends in different partitions. Is the application able to consume from the all partitions? Note: to answer this question you will need to create the topic with at least 2 partitions.
+
+Yes.
+
 * What happens if you run several instances of the application? Are they sharing the different partitions?
+They share broker + partitions.
 
 ## Resources
 1. Example of a Kafka producer using `shopify/sarama`: https://github.com/Shopify/sarama/tree/main/examples/http_server

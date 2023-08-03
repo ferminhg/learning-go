@@ -50,7 +50,7 @@ func createTopic(t string, admin sarama.ClusterAdmin, wg *sync.WaitGroup) {
 
 	log.Printf("Creating topic: %s\n", t)
 	if err := admin.CreateTopic(t, &sarama.TopicDetail{
-		NumPartitions:     1,
+		NumPartitions:     2,
 		ReplicationFactor: 1,
 	}, false); err != nil {
 		log.Println("Error while creating topic: ", err.Error())
