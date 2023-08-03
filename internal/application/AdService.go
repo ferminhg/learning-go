@@ -10,7 +10,7 @@ import (
 )
 
 type AdService struct {
-	Repository   domain.AdServiceRepository
+	repository   domain.AdServiceRepository
 	generator    domain.DescriptionGenerator
 	eventHandler domain.EventHandler
 }
@@ -21,7 +21,7 @@ func NewAdService(
 	eventHandler domain.EventHandler,
 ) AdService {
 	return AdService{
-		Repository:   repository,
+		repository:   repository,
 		generator:    generator,
 		eventHandler: eventHandler,
 	}
@@ -33,7 +33,7 @@ func (s AdService) Post(title string, description string, price float32) (domain
 		return domain.Ad{}, err
 	}
 
-	if err := s.Repository.Save(ad); err != nil {
+	if err := s.repository.Save(ad); err != nil {
 		return domain.Ad{}, err
 	}
 
@@ -50,11 +50,11 @@ func (s AdService) Find(adId string) (domain.Ad, bool) {
 		return domain.Ad{}, false
 	}
 
-	return s.Repository.Find(uuidAdId)
+	return s.repository.Find(uuidAdId)
 }
 
 func (s AdService) FindRandom() ([]domain.Ad, error) {
-	return s.Repository.Search(5)
+	return s.repository.Search(5)
 }
 
 func (s AdService) DescriptionGenerator(title string) (domain.RandomDescription, error) {

@@ -21,7 +21,7 @@ func TestPostAd(t *testing.T) {
 	sp := eventHandler.NewMockEventHandler(t)
 
 	service := AdService{
-		Repository:   inMemoryAdRepository,
+		repository:   inMemoryAdRepository,
 		eventHandler: &sp,
 	}
 
@@ -49,14 +49,14 @@ func TestPostAd(t *testing.T) {
 
 func TestGivenNotValidId(t *testing.T) {
 	inMemoryAdRepository := inmemory.NewInMemoryAdRepository()
-	service := AdService{Repository: inMemoryAdRepository}
+	service := AdService{repository: inMemoryAdRepository}
 	_, ok := service.Find("not valid")
 	assert.False(t, ok)
 }
 
 func TestFindValidAd(t *testing.T) {
 	inMemoryAdRepository := inmemory.NewInMemoryAdRepository()
-	service := AdService{Repository: inMemoryAdRepository}
+	service := AdService{repository: inMemoryAdRepository}
 	ad, _ := domain.NewAd("t", "d", 1)
 	inMemoryAdRepository.Save(ad)
 
@@ -69,7 +69,7 @@ func TestFindValidAd(t *testing.T) {
 
 func TestFindRandomAds(t *testing.T) {
 	inMemoryAdRepository := inmemory.NewInMemoryAdRepository()
-	service := AdService{Repository: inMemoryAdRepository}
+	service := AdService{repository: inMemoryAdRepository}
 	ad1, _ := domain.NewAd("t1", "d", 1)
 	inMemoryAdRepository.Save(ad1)
 	ad2, _ := domain.NewAd("t2", "d", 1)
@@ -114,7 +114,7 @@ type AdServiceTestSuite struct {
 func (suite *AdServiceTestSuite) SetupTest() {
 	fmt.Println("⚒️ Setup Test")
 	suite.repository = newMockRepository()
-	suite.service = AdService{Repository: suite.repository}
+	suite.service = AdService{repository: suite.repository}
 }
 
 func TestAdServiceTestSuite(t *testing.T) {
@@ -130,7 +130,7 @@ func (suite *AdServiceTestSuite) TestGivenAdThenPost() {
 	mockEventHandler := eventHandler.NewMockEventHandler(suite.T())
 	mockEventHandler.MockSP.ExpectSendMessageAndSucceed()
 
-	service := AdService{Repository: repository, eventHandler: &mockEventHandler}
+	service := AdService{repository: repository, eventHandler: &mockEventHandler}
 
 	repository.On("Save", mock.Anything).Return(nil)
 
@@ -142,14 +142,14 @@ func (suite *AdServiceTestSuite) TestGivenAdThenPost() {
 
 func (suite *AdServiceTestSuite) TestGivenAdWhenNotFound() {
 	repository := newMockRepository()
-	service := AdService{Repository: repository}
+	service := AdService{repository: repository}
 	_, ok := service.Find("Not Valid UUID")
 	assert.False(suite.T(), ok)
 }
 
 func (suite *AdServiceTestSuite) TestGivenAdWhenFound() {
 	repository := newMockRepository()
-	service := AdService{Repository: repository}
+	service := AdService{repository: repository}
 
 	randomId, _ := uuid.NewRandom()
 	repository.On("Find", randomId).Return(true)
@@ -163,7 +163,7 @@ func (suite *AdServiceTestSuite) TestGivenAdWhenFound() {
 
 func (suite *AdServiceTestSuite) TestGivenAdSWhenSearch() {
 	repository := newMockRepository()
-	service := AdService{Repository: repository}
+	service := AdService{repository: repository}
 
 	repository.On("Search", 5).Return([5]domain.Ad{})
 
@@ -175,7 +175,7 @@ func (suite *AdServiceTestSuite) TestGivenAdSWhenSearch() {
 
 func (suite *AdServiceTestSuite) TestGivenAdWithLongDesWhenPostThenError() {
 	repository := newMockRepository()
-	service := AdService{Repository: repository}
+	service := AdService{repository: repository}
 	repository.On("Save", mock.Anything).Return(nil)
 
 	var longDescription = faker.Paragraph()
