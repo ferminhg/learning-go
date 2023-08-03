@@ -3,6 +3,7 @@ package application
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/ferminhg/learning-go/internal/domain"
 	"github.com/google/uuid"
 	"math/rand"
@@ -36,13 +37,11 @@ func (s AdService) Post(title string, description string, price float32) (domain
 		return domain.Ad{}, err
 	}
 
-	jsonAd, _ := json.Marshal(ad)
-	_, _, err = s.eventHandler.SendMessage(domain.NewProducerMessage("topic.ads.1", string(jsonAd)))
-	if err != nil {
-		return domain.Ad{}, err
+	if err := s.sendAdEvent(ad); err != nil {
+		return domain.Ad{}, fmt.Errorf("failed to store your data: %s", err)
 	}
 
-	return ad, err
+	return ad, nil
 }
 
 func (s AdService) Find(adId string) (domain.Ad, bool) {
@@ -74,4 +73,14 @@ func (s AdService) DescriptionGenerator(title string) (domain.RandomDescription,
 		return descriptions[r], nil
 
 	}
+}
+
+func (s AdService) sendAdEvent(ad domain.Ad) error {
+	jsonAd, _ := json.Marshal(ad)
+	_, _, err := s.eventHandler.SendMessage(domain.NewProducerMessage("topic.ads.1", string(jsonAd)))
+	if err != nil {
+		return fmt.Errorf("failed to store your data: %s", err)
+	}
+	//fmt.Printf("Your data is stored with unique identifier important/%d/%d\n", partition, offset)
+	return nil
 }
