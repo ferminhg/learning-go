@@ -14,7 +14,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -44,15 +43,7 @@ func TestHandler_PostNewAd(t *testing.T) {
 		require.NoError(t, err)
 
 		req, err := http.NewRequest(http.MethodPost, "/ads", bytes.NewBuffer(b))
-		require.NoError(t, err)
-
-		rec := httptest.NewRecorder()
-		r.ServeHTTP(rec, req)
-
-		res := rec.Result()
-		defer res.Body.Close()
-
-		assert.Equal(t, http.StatusBadRequest, res.StatusCode)
+		assertStatusCodeAndMessage(t, r, req, http.StatusBadRequest, "")
 	})
 
 	t.Run("given a valid request it return 201", func(t *testing.T) {
@@ -67,24 +58,7 @@ func TestHandler_PostNewAd(t *testing.T) {
 		require.NoError(t, err)
 
 		req, err := http.NewRequest(http.MethodPost, "/ads", bytes.NewBuffer(b))
-		require.NoError(t, err)
-
-		rec := httptest.NewRecorder()
-		r.ServeHTTP(rec, req)
-
-		res := rec.Result()
-		defer res.Body.Close()
-
-		assert.Equal(t, http.StatusCreated, res.StatusCode)
-
-		jsonData, err := io.ReadAll(res.Body)
-		require.NoError(t, err)
-
-		data := map[string]string{}
-
-		err = json.Unmarshal(jsonData, &data)
-		require.NoError(t, err)
-		assert.Contains(t, data["message"], "Ad is valid 🎊")
+		assertStatusCodeAndMessage(t, r, req, http.StatusCreated, "Ad is valid 🎊")
 	})
 }
 
@@ -104,35 +78,17 @@ func TestHandler_FindById(t *testing.T) {
 	t.Run("given an invalid id, it returns 404", func(t *testing.T) {
 		NotFoundAdId, _ := uuid.NewRandom()
 		adRepository.On("Find", mock.Anything).Return(domain.Ad{}, false)
-
-		req, err := http.NewRequest(http.MethodGet, "/ads/"+NotFoundAdId.String(), nil)
-		require.NoError(t, err)
-
-		rec := httptest.NewRecorder()
-		r.ServeHTTP(rec, req)
-
-		res := rec.Result()
-		defer res.Body.Close()
-
-		assert.Equal(t, http.StatusNotFound, res.StatusCode)
-
+		req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/ads/%s", NotFoundAdId), nil)
+		assertStatusCodeAndMessage(t, r, req, http.StatusNotFound, "")
 		adRepository.On("Find").Unset()
 	})
 
 	t.Run("given a valid id, it returns the Ad", func(t *testing.T) {
 		ad := domain.RandomAdFactory()
 		adRepository.On("Find", mock.Anything).Return(ad, true)
-
-		req, err := http.NewRequest(http.MethodGet, "/ads/"+ad.Id.String(), nil)
-		require.NoError(t, err)
-
-		rec := httptest.NewRecorder()
-		r.ServeHTTP(rec, req)
-
-		res := rec.Result()
-		defer res.Body.Close()
-
-		assert.Equal(t, http.StatusOK, res.StatusCode)
+		req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/ads/%s", ad.Id), nil)
+		assertStatusCodeAndMessage(t, r, req, http.StatusOK, "")
+		adRepository.On("Find").Unset()
 	})
 }
 
@@ -151,16 +107,8 @@ func TestHandler_GetAds(t *testing.T) {
 	r.GET("/ads", GetAdsEndpoint(service))
 
 	t.Run("it return a Ad list empty", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodGet, "/ads", nil)
-		require.NoError(t, err)
-
-		rec := httptest.NewRecorder()
-		r.ServeHTTP(rec, req)
-
-		res := rec.Result()
-		defer res.Body.Close()
-
-		assert.Equal(t, http.StatusOK, res.StatusCode)
+		req, _ := http.NewRequest(http.MethodGet, "/ads", nil)
+		assertStatusCodeAndMessage(t, r, req, http.StatusOK, "")
 	})
 }
 
@@ -174,55 +122,41 @@ func TestHandler_DeleteAd(t *testing.T) {
 
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
-
 	r.DELETE("/ads/:id", DeleteAdByIdHandler(service))
 
 	t.Run("given a not valid AdId it returns 400", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodDelete, "/ads/notvalidadid", nil)
-		require.NoError(t, err)
-		rec := httptest.NewRecorder()
-		r.ServeHTTP(rec, req)
-
-		res := rec.Result()
-		defer res.Body.Close()
-
-		require.Equal(t, http.StatusBadRequest, res.StatusCode)
-
-		var data map[string]string
-		require.NoError(t, json.NewDecoder(res.Body).Decode(&data))
-		assert.Contains(t, data["message"], "invalid UUID")
+		req, _ := http.NewRequest(http.MethodDelete, "/ads/notvalidadid", nil)
+		assertStatusCodeAndMessage(t, r, req, http.StatusBadRequest, "invalid UUID")
 	})
 
 	t.Run("given an Id when does not exist then return 404", func(t *testing.T) {
 		randomUUID, _ := uuid.NewRandom()
-
 		repository.On("Delete", mock.Anything).Return(false)
-		req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("/ads/%s", randomUUID), nil)
-		require.NoError(t, err)
-
-		rec := httptest.NewRecorder()
-		r.ServeHTTP(rec, req)
-
-		res := rec.Result()
-		defer res.Body.Close()
-
-		require.Equal(t, http.StatusNotFound, res.StatusCode)
+		req, _ := http.NewRequest(http.MethodDelete, fmt.Sprintf("/ads/%s", randomUUID), nil)
+		assertStatusCodeAndMessage(t, r, req, http.StatusNotFound, "")
 		repository.On("Delete", mock.Anything).Unset()
 	})
 
 	t.Run("given an Id when exits then return 200", func(t *testing.T) {
 		randomUUID, _ := uuid.NewRandom()
-
 		repository.On("Delete", mock.Anything).Return(true)
-		req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("/ads/%s", randomUUID), nil)
-		require.NoError(t, err)
-
-		rec := httptest.NewRecorder()
-		r.ServeHTTP(rec, req)
-
-		res := rec.Result()
-		defer res.Body.Close()
-
-		require.Equal(t, http.StatusOK, res.StatusCode)
+		req, _ := http.NewRequest(http.MethodDelete, fmt.Sprintf("/ads/%s", randomUUID), nil)
+		assertStatusCodeAndMessage(t, r, req, http.StatusOK, "")
 	})
+}
+
+func assertStatusCodeAndMessage(t *testing.T, r *gin.Engine, req *http.Request, expectedStatusCode int, expectedMessage string) {
+	rec := httptest.NewRecorder()
+	r.ServeHTTP(rec, req)
+
+	res := rec.Result()
+	defer res.Body.Close()
+
+	require.Equal(t, expectedStatusCode, res.StatusCode)
+
+	if len(expectedMessage) > 0 {
+		var data map[string]string
+		require.NoError(t, json.NewDecoder(res.Body).Decode(&data))
+		assert.Contains(t, data["message"], expectedMessage)
+	}
 }
