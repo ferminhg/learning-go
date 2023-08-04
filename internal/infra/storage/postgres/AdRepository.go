@@ -76,3 +76,8 @@ func (p PostgresAdRepository) Search(maxNumber int) ([]domain.Ad, error) {
 
 	return ads, nil
 }
+
+func (p PostgresAdRepository) Delete(id uuid.UUID) bool {
+	//TODO implement me
+	panic("implement me")
+}

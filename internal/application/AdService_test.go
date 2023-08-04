@@ -206,6 +206,9 @@ func (m mockRepository) Search(maxNumber int) ([]domain.Ad, error) {
 	return ads, nil
 }
 
+func (m mockRepository) Delete(uuid uuid.UUID) bool {
+	return false
+}
 func TestAdService_DescriptionGenerator(t *testing.T) {
 	service := AdService{
 		generator: generator.FakerDescriptionGenerator{},

@@ -1,6 +1,7 @@
 package inmemory
 
 import (
+	"fmt"
 	"github.com/ferminhg/learning-go/internal/domain"
 	"github.com/google/uuid"
 	"math/rand"
@@ -55,4 +56,9 @@ func (repository InMemoryAdRepository) Find(uuid uuid.UUID) (domain.Ad, bool) {
 	//fmt.Println("🔎 finding ...", uuid.String())
 	val, ok := repository.ads[uuid.String()]
 	return val, ok
+}
+
+func (repository InMemoryAdRepository) Delete(uuid uuid.UUID) bool {
+	fmt.Println("🗑️ delete ...", uuid.String())
+	return true
 }

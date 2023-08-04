@@ -85,3 +85,14 @@ func (s AdService) sendAdEvent(ad domain.Ad) error {
 	fmt.Printf("Your data is stored with unique identifier important/%d/%d\n", partition, offset)
 	return nil
 }
+
+func (s AdService) Delete(adId string) (bool, error) {
+	uuidAdId, err := uuid.Parse(adId)
+	if err != nil {
+		return false, err
+	}
+
+	ok := s.repository.Delete(uuidAdId)
+
+	return ok, nil
+}

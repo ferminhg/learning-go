@@ -3,6 +3,7 @@ package handler
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/ferminhg/learning-go/internal/application"
 	"github.com/ferminhg/learning-go/internal/domain"
 	"github.com/ferminhg/learning-go/internal/infra/eventHandler"
@@ -88,10 +89,7 @@ func TestHandler_PostNewAd(t *testing.T) {
 }
 
 func TestHandler_FindById(t *testing.T) {
-	NotFoundAdId, _ := uuid.NewRandom()
-
 	adRepository := new(storagemocks.AdServiceRepository)
-	adRepository.On("Find", mock.Anything).Return(domain.Ad{}, false)
 
 	service := application.NewAdService(
 		adRepository,
@@ -103,7 +101,10 @@ func TestHandler_FindById(t *testing.T) {
 	r := gin.New()
 	r.GET("/ads/:id", GetAdByIdEndpoint(service))
 
-	t.Run("given a invalid id it return 404", func(t *testing.T) {
+	t.Run("given an invalid id, it returns 404", func(t *testing.T) {
+		NotFoundAdId, _ := uuid.NewRandom()
+		adRepository.On("Find", mock.Anything).Return(domain.Ad{}, false)
+
 		req, err := http.NewRequest(http.MethodGet, "/ads/"+NotFoundAdId.String(), nil)
 		require.NoError(t, err)
 
@@ -114,12 +115,14 @@ func TestHandler_FindById(t *testing.T) {
 		defer res.Body.Close()
 
 		assert.Equal(t, http.StatusNotFound, res.StatusCode)
-	})
-	ad := domain.RandomAdFactory()
-	adRepository.On("Find").Unset()
-	adRepository.On("Find", mock.Anything).Return(ad, true)
 
-	t.Run("given a valid id it return de Ad", func(t *testing.T) {
+		adRepository.On("Find").Unset()
+	})
+
+	t.Run("given a valid id, it returns the Ad", func(t *testing.T) {
+		ad := domain.RandomAdFactory()
+		adRepository.On("Find", mock.Anything).Return(ad, true)
+
 		req, err := http.NewRequest(http.MethodGet, "/ads/"+ad.Id.String(), nil)
 		require.NoError(t, err)
 
@@ -162,10 +165,17 @@ func TestHandler_GetAds(t *testing.T) {
 }
 
 func TestHandler_DeleteAd(t *testing.T) {
+	repository := new(storagemocks.AdServiceRepository)
+	service := application.NewAdService(
+		repository,
+		generator.New(false),
+		eventHandler.NewMockEventHandler(t),
+	)
+
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
 
-	r.DELETE("/ads/:id", DeleteAdByIdHandler())
+	r.DELETE("/ads/:id", DeleteAdByIdHandler(service))
 
 	t.Run("given a not valid AdId it returns 400", func(t *testing.T) {
 		req, err := http.NewRequest(http.MethodDelete, "/ads/notvalidadid", nil)
@@ -174,13 +184,45 @@ func TestHandler_DeleteAd(t *testing.T) {
 		r.ServeHTTP(rec, req)
 
 		res := rec.Result()
-		defer func(Body io.ReadCloser) {
-			err := Body.Close()
-			if err != nil {
-				require.NoError(t, err)
-			}
-		}(res.Body)
+		defer res.Body.Close()
 
-		assert.Equal(t, http.StatusNotFound, res.StatusCode)
+		require.Equal(t, http.StatusBadRequest, res.StatusCode)
+
+		var data map[string]string
+		require.NoError(t, json.NewDecoder(res.Body).Decode(&data))
+		assert.Contains(t, data["message"], "invalid UUID")
+	})
+
+	t.Run("given an Id when does not exist then return 404", func(t *testing.T) {
+		randomUUID, _ := uuid.NewRandom()
+
+		repository.On("Delete", mock.Anything).Return(false)
+		req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("/ads/%s", randomUUID), nil)
+		require.NoError(t, err)
+
+		rec := httptest.NewRecorder()
+		r.ServeHTTP(rec, req)
+
+		res := rec.Result()
+		defer res.Body.Close()
+
+		require.Equal(t, http.StatusNotFound, res.StatusCode)
+		repository.On("Delete", mock.Anything).Unset()
+	})
+
+	t.Run("given an Id when exits then return 200", func(t *testing.T) {
+		randomUUID, _ := uuid.NewRandom()
+
+		repository.On("Delete", mock.Anything).Return(true)
+		req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("/ads/%s", randomUUID), nil)
+		require.NoError(t, err)
+
+		rec := httptest.NewRecorder()
+		r.ServeHTTP(rec, req)
+
+		res := rec.Result()
+		defer res.Body.Close()
+
+		require.Equal(t, http.StatusOK, res.StatusCode)
 	})
 }

@@ -80,8 +80,21 @@ func PostDescriptionGenerator(service application.AdService) gin.HandlerFunc {
 	}
 }
 
-func DeleteAdByIdHandler() gin.HandlerFunc {
+func DeleteAdByIdHandler(service application.AdService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		ctx.JSON(http.StatusNotFound, nil)
+		adId := ctx.Param("id")
+		ok, err := service.Delete(adId)
+
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+			return
+		}
+
+		if !ok {
+			ctx.JSON(http.StatusNotFound, nil)
+			return
+		}
+
+		ctx.JSON(http.StatusOK, nil)
 	}
 }

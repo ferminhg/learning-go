@@ -14,6 +14,20 @@ type AdServiceRepository struct {
 	mock.Mock
 }
 
+// Delete provides a mock function with given fields: id
+func (_m *AdServiceRepository) Delete(id uuid.UUID) bool {
+	ret := _m.Called(id)
+
+	var r0 bool
+	if rf, ok := ret.Get(0).(func(uuid.UUID) bool); ok {
+		r0 = rf(id)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	return r0
+}
+
 // Find provides a mock function with given fields: _a0
 func (_m *AdServiceRepository) Find(_a0 uuid.UUID) (domain.Ad, bool) {
 	ret := _m.Called(_a0)
