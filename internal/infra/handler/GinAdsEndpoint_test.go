@@ -160,3 +160,27 @@ func TestHandler_GetAds(t *testing.T) {
 		assert.Equal(t, http.StatusOK, res.StatusCode)
 	})
 }
+
+func TestHandler_DeleteAd(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	r := gin.New()
+
+	r.DELETE("/ads/:id", DeleteAdByIdHandler())
+
+	t.Run("given a not valid AdId it returns 400", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodDelete, "/ads/notvalidadid", nil)
+		require.NoError(t, err)
+		rec := httptest.NewRecorder()
+		r.ServeHTTP(rec, req)
+
+		res := rec.Result()
+		defer func(Body io.ReadCloser) {
+			err := Body.Close()
+			if err != nil {
+				require.NoError(t, err)
+			}
+		}(res.Body)
+
+		assert.Equal(t, http.StatusNotFound, res.StatusCode)
+	})
+}

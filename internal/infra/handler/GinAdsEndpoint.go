@@ -79,3 +79,9 @@ func PostDescriptionGenerator(service application.AdService) gin.HandlerFunc {
 
 	}
 }
+
+func DeleteAdByIdHandler() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		ctx.JSON(http.StatusNotFound, nil)
+	}
+}
