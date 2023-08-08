@@ -3,7 +3,7 @@
 ## Ad Consumer
 
 ```shell
-go run cmd/event/consumer/main.go -brokers localhost:9092 -topics topic.ads.1 -group example
+go run cmd/event/consumer/main.go -brokers localhost:9092 -topics muken.ads.1.ad.publised,muken.ads.1.ads.removed -group example
 ```
 
 
@@ -17,10 +17,10 @@ docker compose build
 docker compose run
 ```
 
-Create two topics `topic.access_log.1` and `topic.important.1`:
+Create two topics `muken.ads.1.ad.publised` and `muken.ads.1.ads.removed`:
 
 ```shell
-go run cmd/event/broker/broker.go -brokers localhost:9092 -topics topic.access_log.1,topic.important.1
+go run cmd/event/broker/broker.go -brokers localhost:9092 -topics muken.ads.1.ad.publised,muken.ads.1.ads.removed
 ```
 
 Run http server producer:
@@ -30,7 +30,7 @@ go run cmd/event/producer/http_server.go -addr localhost:8090 -brokers localhost
 
 Run consumer:
 ```shell
-go run cmd/event/consumer/main.go -brokers localhost:9092 -topics topic.important.1,topic.access_log.1 -group example
+go run cmd/event/consumer/main.go -brokers localhost:9092 -topics muken.ads.1.ad.publised,muken.ads.1.ads.removed -group example
 ```
 
 Generate event:

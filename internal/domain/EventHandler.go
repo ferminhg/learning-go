@@ -1,6 +1,6 @@
 package domain
 
-var AdTopic = "topic.ads.1"
+var AdTopic = "muken.ads.1.ad.publised"
 
 type ProducerMessage struct {
 	topic string
