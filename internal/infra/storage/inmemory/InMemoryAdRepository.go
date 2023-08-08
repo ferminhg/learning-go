@@ -59,6 +59,11 @@ func (repository InMemoryAdRepository) Find(uuid uuid.UUID) (domain.Ad, bool) {
 }
 
 func (repository InMemoryAdRepository) Delete(uuid uuid.UUID) bool {
+
 	fmt.Println("🗑️ delete ...", uuid.String())
+	if _, ok := repository.ads[uuid.String()]; !ok {
+		return false
+	}
+	delete(repository.ads, uuid.String())
 	return true
 }
