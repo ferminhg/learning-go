@@ -85,3 +85,20 @@ func TestPostgresAdRepository_FindRandom(t *testing.T) {
 
 	})
 }
+
+func TestPostgresAdRepository_Delete(t *testing.T) {
+	connStr := "host=localhost port=5432 user=wopwop password=wopwop dbname=postgres sslmode=disable"
+	db, err := sql.Open("postgres", connStr)
+	require.NoError(t, err)
+
+	defer db.Close()
+
+	notExistId, _ := uuid.NewRandom()
+
+	repo := NewPostgresAdRepository(db)
+	assert.False(t, repo.Delete(notExistId))
+
+	ad := domain.RandomAdFactory()
+	repo.Save(ad)
+	assert.True(t, repo.Delete(ad.Id))
+}

@@ -20,9 +20,9 @@ func NewPostgresAdRepository(db *sql.DB) *PostgresAdRepository {
 }
 
 func (p PostgresAdRepository) Save(ad domain.Ad) error {
-	sql := "INSERT INTO ads (id, title, description, price, createddate) VALUES ($1, $2, $3, $4, $5)"
+	instruction := "INSERT INTO ads (id, title, description, price, createddate) VALUES ($1, $2, $3, $4, $5)"
 
-	_, err := p.db.Exec(sql, ad.Id, ad.Title, ad.Description, ad.Price, ad.CreatedDate)
+	_, err := p.db.Exec(instruction, ad.Id, ad.Title, ad.Description, ad.Price, ad.CreatedDate)
 	if err != nil {
 		log.Fatal(err)
 		return err
@@ -78,6 +78,17 @@ func (p PostgresAdRepository) Search(maxNumber int) ([]domain.Ad, error) {
 }
 
 func (p PostgresAdRepository) Delete(id uuid.UUID) bool {
-	//TODO implement me
-	panic("implement me")
+	instruction := "DELETE FROM ads WHERE id = $1"
+
+	res, err := p.db.Exec(instruction, id.String())
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+
+	if rowsAffected, _ := res.RowsAffected(); rowsAffected == 0 {
+		return false
+	}
+
+	return true
 }
