@@ -62,11 +62,11 @@ In this sixth challenge we are going to deal with Kafka's consumers and producer
 
 Let's add some integration tests for what we implemented!
 
-#### 🎯 Challenge #8. TDD approach
+#### ✅ Challenge #8. TDD approach
 
 In this challenge, we'll use the TDD approach in order to delete an add
 
-#### Challenge #9. Clean code
+#### 🎯 Challenge #9. Clean code
 
 Let's take a look back and see where's room for improvements
 
